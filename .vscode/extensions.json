@@ -1,0 +1,25 @@
+{
+  "recommendations": [
+    // Prettier - Code formatter
+    "esbenp.prettier-vscode",
+
+    // ESLint
+    "dbaeumer.vscode-eslint",
+
+    // Astro
+    "astro-build.astro-vscode",
+
+    // TypeScript
+    "ms-vscode.vscode-typescript-next",
+
+    // EditorConfig
+    "editorconfig.editorconfig",
+
+    // Git
+    "eamodio.gitlens",
+
+    // GitHub Copilot (optional but recommended)
+    "github.copilot",
+    "github.copilot-chat"
+  ]
+}
