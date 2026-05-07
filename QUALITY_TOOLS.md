@@ -27,18 +27,19 @@ Types are checked only when:
 ### Run Options
 
 ```bash
-# Development WITH continuous type-checking in background (default - recommended for strict mode)
+# Development server (fast, no type-checking in background)
 pnpm dev
-
-# Development WITHOUT type-checking (if you need speed only)
+# or
 pnpm start
 
-# One-time type check
+# One-time type check (run manually when needed)
 pnpm type-check
 
-# Continuous type-checking in watch mode
+# Continuous type-checking in watch mode (optional - run in separate terminal)
 pnpm type-check:watch
 ```
+
+**Note:** Due to compatibility issues with `astro check --watch`, the dev command no longer includes automatic type-checking. Run `pnpm type-check` or `pnpm type-check:watch` manually when you need to verify types during development.
 
 ## 🎨 Prettier
 
