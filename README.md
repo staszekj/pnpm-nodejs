@@ -51,7 +51,25 @@ pnpm -r dev
 pnpm up -r
 ```
 
+## 🤝 Contributing
+
+Before contributing, please read:
+- [Contributing Guidelines](.github/CONTRIBUTING.md) - How to contribute to this project
+- [Copilot Instructions](.github/copilot-instructions.md) - Coding standards and guidelines
+- [Quality Tools](QUALITY_TOOLS.md) - Development workflow and tools
+
+**Quick Start for Contributors:**
+```bash
+# All code must pass quality checks before commit
+pnpm lint          # Check code quality
+pnpm lint:fix      # Auto-fix issues
+```
+
+**Pre-commit Hook**: Automatically runs `pnpm lint` before each commit.
+
 ## 📚 Documentation
 
 - [pnpm workspace](https://pnpm.io/workspaces)
 - [Astro](https://docs.astro.build)
+- [TypeScript](https://www.typescriptlang.org/)
+- [ESLint](https://eslint.org/)
