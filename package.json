@@ -23,7 +23,6 @@
     "pnpm": ">=8.0.0"
   },
   "devDependencies": {
-    "husky": "^9.1.7",
-    "lint-staged": "^17.0.2"
+    "husky": "^9.1.7"
   }
 }
