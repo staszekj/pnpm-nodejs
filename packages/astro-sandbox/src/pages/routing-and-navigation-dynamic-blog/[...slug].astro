@@ -44,7 +44,7 @@ export const getStaticPaths = (() => {
 }) satisfies GetStaticPaths;
 
 const { title, content, category, slug } = Astro.props;
-const breadcrumbs = slug === 'home' ? [] : slug.split('/');
+const breadcrumbs = !slug || slug === 'home' ? [] : slug.split('/');
 ---
 
 <Layout title={title}>
