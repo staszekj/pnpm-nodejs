@@ -1,0 +1,263 @@
+---
+import ViewTransitionsLayout from '../layouts/ViewTransitionsLayout.astro';
+
+const images = [
+  { id: 1, title: 'Sunset Mountains', color: '#ff6b6b', desc: 'Beautiful mountain sunset' },
+  { id: 2, title: 'Ocean Waves', color: '#4ecdc4', desc: 'Peaceful ocean waves' },
+  { id: 3, title: 'Forest Path', color: '#95e77d', desc: 'Mystical forest trail' },
+  { id: 4, title: 'Desert Dunes', color: '#ffd93d', desc: 'Golden desert landscape' },
+  { id: 5, title: 'Northern Lights', color: '#a78bfa', desc: 'Aurora borealis display' },
+  { id: 6, title: 'Cherry Blossoms', color: '#fbb6ce', desc: 'Spring cherry trees' },
+];
+---
+
+<ViewTransitionsLayout
+  title="Gallery - View Transitions"
+  description="Interactive gallery with smooth transitions"
+>
+  <div class="gallery-header">
+    <h1 transition:name="page-title">🖼️ Photo Gallery</h1>
+    <p class="subtitle">Click any image to see transition animations</p>
+  </div>
+
+  <div class="features-panel">
+    <h2>View Transitions Features Demonstrated:</h2>
+    <ul>
+      <li><strong>transition:name</strong> - Unique identifiers for element morphing</li>
+      <li><strong>transition:persist</strong> - Preserve elements (nav & footer)</li>
+      <li><strong>transition:animate</strong> - Custom animation directives</li>
+      <li><strong>ViewTransitions API</strong> - Smooth page navigation</li>
+      <li><strong>Shared element transitions</strong> - Morphing between pages</li>
+    </ul>
+  </div>
+
+  <div class="gallery">
+    {
+      images.map((img) => (
+        <a
+          href={`/routing-and-navigation-view-transitions-image/${img.id}`}
+          class="gallery-item"
+          transition:name={`image-${img.id}`}
+          style={`background: ${img.color}`}
+        >
+          <div class="item-content">
+            <h3>{img.title}</h3>
+            <p>{img.desc}</p>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="code-examples">
+    <h2>Code Examples</h2>
+
+    <div class="code-block">
+      <h3>1. Enable View Transitions</h3>
+      <pre><code>&lt;head&gt;
+  &lt;ViewTransitions /&gt;
+&lt;/head&gt;</code></pre>
+    </div>
+
+    <div class="code-block">
+      <h3>2. Named Transitions (Element Morphing)</h3>
+      <pre><code>&lt;!-- Gallery Page --&gt;
+&lt;img transition:name="image-1" src="..." /&gt;
+
+&lt;!-- Detail Page --&gt;
+&lt;img transition:name="image-1" src="..." /&gt;</code></pre>
+    </div>
+
+    <div class="code-block">
+      <h3>3. Persist Elements Across Navigation</h3>
+      <pre><code>&lt;nav transition:persist="navigation"&gt;
+  &lt;!-- Nav stays the same across pages --&gt;
+&lt;/nav&gt;</code></pre>
+    </div>
+
+    <div class="code-block">
+      <h3>4. Custom Animations</h3>
+      <pre><code>&lt;div transition:animate="slide"&gt;
+  &lt;!-- Uses slide animation --&gt;
+&lt;/div&gt;
+
+&lt;!-- Available: fade, slide, initial, none --&gt;</code></pre>
+    </div>
+
+    <div class="code-block">
+      <h3>5. Lifecycle Events</h3>
+      <pre><code>document.addEventListener('astro:page-load', () =&gt; &#123;
+  console.log('Page loaded!');
+&#125;);
+
+document.addEventListener('astro:before-swap', (e) =&gt; &#123;
+  console.log('About to swap content');
+&#125;);</code></pre>
+    </div>
+  </div>
+</ViewTransitionsLayout>
+
+<script>
+  // View Transitions lifecycle events
+  document.addEventListener('astro:page-load', () => {
+    console.log('🎬 Page loaded with View Transitions');
+  });
+
+  document.addEventListener('astro:before-preparation', () => {
+    console.log('🔄 Preparing for navigation...');
+  });
+
+  document.addEventListener('astro:after-preparation', () => {
+    console.log('✅ Navigation prepared');
+  });
+
+  document.addEventListener('astro:before-swap', () => {
+    console.log('🔀 About to swap page content');
+  });
+
+  document.addEventListener('astro:after-swap', () => {
+    console.log('✨ Page content swapped');
+  });
+</script>
+
+<style>
+  .gallery-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .gallery-header h1 {
+    font-size: 3rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.7;
+  }
+
+  .features-panel {
+    background: rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .features-panel h2 {
+    margin-bottom: 1rem;
+    color: #667eea;
+  }
+
+  .features-panel ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .features-panel li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+  }
+
+  .features-panel li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #667eea;
+    font-weight: bold;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+
+  .gallery-item {
+    aspect-ratio: 4/3;
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: flex-end;
+    transition:
+      transform 0.3s,
+      box-shadow 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .item-content {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    width: 100%;
+    padding: 2rem 1.5rem 1.5rem;
+  }
+
+  .item-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .item-content p {
+    opacity: 0.9;
+  }
+
+  .code-examples {
+    margin-top: 4rem;
+  }
+
+  .code-examples h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #667eea;
+  }
+
+  .code-block {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .code-block h3 {
+    color: #fbbf24;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .code-block pre {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  .code-block code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .gallery {
+      grid-template-columns: 1fr;
+    }
+
+    .gallery-header h1 {
+      font-size: 2rem;
+    }
+  }
+</style>

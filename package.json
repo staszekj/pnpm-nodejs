@@ -1,0 +1,24 @@
+{
+  "name": "pnpm-monorepo",
+  "version": "1.0.0",
+  "description": "Monorepo with pnpm workspace",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter=astro-sandbox dev",
+    "build": "pnpm --filter=astro-sandbox build",
+    "preview": "pnpm --filter=astro-sandbox preview",
+    "lint": "pnpm --filter=astro-sandbox lint",
+    "lint:fix": "pnpm --filter=astro-sandbox lint:fix",
+    "format": "pnpm --filter=astro-sandbox format",
+    "format:check": "pnpm --filter=astro-sandbox format:check",
+    "type-check": "pnpm --filter=astro-sandbox type-check",
+    "type-check:watch": "pnpm --filter=astro-sandbox type-check:watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.14.1",
+    "pnpm": ">=8.0.0"
+  }
+}

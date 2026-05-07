@@ -1,0 +1,335 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Welcome to Astro Sandbox">
+  <main>
+    <h1>🚀 Welcome to Astro Sandbox</h1>
+    <p class="subtitle">
+      A Node.js SSR-enabled Astro project with TypeScript, ESLint, and Prettier
+    </p>
+
+    <section class="features">
+      <div class="feature-card">
+        <h2>⚡️ Server-Side Rendering</h2>
+        <p>Using @astrojs/node adapter in standalone mode</p>
+      </div>
+
+      <div class="feature-card">
+        <h2>📘 TypeScript Strict Mode</h2>
+        <p>Maximum type safety with rigorous compiler options</p>
+      </div>
+
+      <div class="feature-card">
+        <h2>🔧 ESLint Flat Config</h2>
+        <p>Modern ESLint 9.x with typescript-eslint strict rules</p>
+      </div>
+
+      <div class="feature-card">
+        <h2>💅 Prettier Integration</h2>
+        <p>Consistent code formatting with prettier-plugin-astro</p>
+      </div>
+    </section>
+
+    <section class="routing-demos">
+      <h2>🗺️ Advanced Routing & Navigation Examples</h2>
+      <p class="section-desc">Comprehensive demonstrations of Astro's routing capabilities:</p>
+
+      <div class="demo-grid">
+        <a href="/routing-and-navigation-dynamic-blog" class="demo-card">
+          <div class="demo-icon">🔀</div>
+          <h3>Dynamic Routes</h3>
+          <p>Rest parameters, multi-level paths, breadcrumbs, and getStaticPaths</p>
+          <span class="demo-tag">File-based Routing</span>
+        </a>
+
+        <a href="/routing-and-navigation-api-demo" class="demo-card">
+          <div class="demo-icon">🔌</div>
+          <h3>API Endpoints</h3>
+          <p>Full CRUD with GET, POST, PUT, PATCH, DELETE methods and type-safe responses</p>
+          <span class="demo-tag">Server Endpoints</span>
+        </a>
+
+        <a href="/routing-and-navigation-middleware-demo" class="demo-card">
+          <div class="demo-icon">🔐</div>
+          <h3>Middleware</h3>
+          <p>Authentication, request tracking, context.locals, and rewrites with sequence()</p>
+          <span class="demo-tag">Request Pipeline</span>
+        </a>
+
+        <a href="/routing-and-navigation-view-transitions-gallery" class="demo-card">
+          <div class="demo-icon">✨</div>
+          <h3>View Transitions</h3>
+          <p>Smooth animations, element morphing, persistent state, and lifecycle events</p>
+          <span class="demo-tag">ClientRouter</span>
+        </a>
+
+        <a href="/routing-and-navigation-pagination-demo" class="demo-card">
+          <div class="demo-icon">📄</div>
+          <h3>Pagination</h3>
+          <p>paginate() function, page metadata, navigation controls, and nested routes</p>
+          <span class="demo-tag">Static Pagination</span>
+        </a>
+
+        <a href="/routing-and-navigation-rewrite-demo" class="demo-card">
+          <div class="demo-icon">🔄</div>
+          <h3>Rewrites</h3>
+          <p>Transparent URL rewrites with Astro.rewrite() for content variants</p>
+          <span class="demo-tag">Server Rewrites</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="api-demo">
+      <h2>API Endpoint Demo</h2>
+      <div class="demo-content">
+        <p>Test the basic API endpoint:</p>
+        <div class="api-buttons">
+          <button id="test-get">GET /api/hello</button>
+          <button id="test-post">POST /api/hello</button>
+        </div>
+        <pre id="api-response">Click a button to test the API...</pre>
+      </div>
+    </section>
+
+    <section class="links">
+      <h2>Quick Links</h2>
+      <ul>
+        <li><a href="https://docs.astro.build">Astro Documentation</a></li>
+        <li><a href="https://www.typescriptlang.org/docs/">TypeScript Docs</a></li>
+        <li><a href="https://eslint.org/docs/latest/">ESLint Documentation</a></li>
+        <li><a href="https://prettier.io/docs/">Prettier Documentation</a></li>
+      </ul>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  const responseEl = document.getElementById('api-response') as HTMLPreElement;
+
+  document.getElementById('test-get')?.addEventListener('click', async () => {
+    try {
+      const response = await fetch('/api/hello');
+      const data = await response.json();
+      responseEl.textContent = JSON.stringify(data, null, 2);
+    } catch (error) {
+      responseEl.textContent = `Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    }
+  });
+
+  document.getElementById('test-post')?.addEventListener('click', async () => {
+    try {
+      const response = await fetch('/api/hello', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'Hello from client!', timestamp: Date.now() }),
+      });
+      const data = await response.json();
+      responseEl.textContent = JSON.stringify(data, null, 2);
+    } catch (error) {
+      responseEl.textContent = `Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    }
+  });
+</script>
+
+<style>
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  h1 {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, rgb(var(--accent)) 0%, rgb(var(--accent-light)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 3rem;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .feature-card {
+    background: rgba(var(--accent-light), 0.1);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(var(--accent), 0.2);
+  }
+
+  .feature-card h2 {
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+    color: rgb(var(--accent));
+  }
+
+  .routing-demos {
+    background: linear-gradient(
+      135deg,
+      rgba(var(--accent), 0.1) 0%,
+      rgba(var(--accent-light), 0.1) 100%
+    );
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    margin-bottom: 3rem;
+    border: 2px solid rgba(var(--accent), 0.2);
+  }
+
+  .routing-demos h2 {
+    text-align: center;
+    color: rgb(var(--accent));
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+  }
+
+  .section-desc {
+    text-align: center;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+  }
+
+  .demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .demo-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .demo-card:hover {
+    transform: translateY(-5px);
+    border-color: rgb(var(--accent));
+    box-shadow: 0 10px 30px rgba(var(--accent), 0.2);
+  }
+
+  .demo-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .demo-card h3 {
+    color: rgb(var(--accent));
+    margin-bottom: 0.75rem;
+    font-size: 1.4rem;
+  }
+
+  .demo-card p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .demo-tag {
+    display: inline-block;
+    background: rgba(var(--accent), 0.1);
+    color: rgb(var(--accent));
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .api-demo,
+  .links {
+    background: rgba(var(--accent-light), 0.05);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .api-demo h2,
+  .links h2 {
+    margin-bottom: 1rem;
+    color: rgb(var(--accent));
+  }
+
+  .demo-content {
+    margin-top: 1rem;
+  }
+
+  .api-buttons {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+  }
+
+  button {
+    padding: 0.75rem 1.5rem;
+    background: rgb(var(--accent));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.2s;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+
+  pre {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-top: 1rem;
+  }
+
+  .links ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .links li {
+    margin: 0.75rem 0;
+  }
+
+  .links a {
+    color: rgb(var(--accent));
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .links a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2rem;
+    }
+
+    .demo-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .routing-demos {
+      padding: 2rem 1rem;
+    }
+  }
+</style>

@@ -1,0 +1,93 @@
+---
+// This page is shown when access is denied (rewritten by middleware)
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Access Denied</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚫 Access Denied</h1>
+      <p>You don't have permission to access this page.</p>
+
+      <div class="error-panel">
+        <h2>❌ Insufficient Permissions</h2>
+        <p>This page requires <strong>admin</strong> role.</p>
+        <p>Your current role doesn't allow access to this resource.</p>
+
+        <div class="actions">
+          <a href="/routing-and-navigation-middleware-demo" class="button"> ← Back to Demo </a>
+        </div>
+
+        <div class="hint">
+          <p>
+            <strong>Hint:</strong> Click "Login as Admin" on the demo page to access admin areas.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        padding: 2rem;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .container {
+        max-width: 600px;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .error-panel {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+      }
+
+      .actions {
+        margin: 2rem 0;
+      }
+
+      .button {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid white;
+        border-radius: 8px;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.2s;
+      }
+
+      .button:hover {
+        background: white;
+        color: #ef4444;
+      }
+
+      .hint {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,134 @@
+---
+// Base layout for View Transitions demos
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+import { ViewTransitions } from 'astro:transitions';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <ViewTransitions />
+  </head>
+  <body>
+    <nav transition:persist="nav">
+      <div class="nav-container">
+        <h1 class="nav-title">View Transitions Demo</h1>
+        <div class="nav-links">
+          <a href="/routing-and-navigation-view-transitions-gallery">Gallery</a>
+          <a href="/routing-and-navigation-view-transitions-about">About</a>
+          <a href="/routing-and-navigation-view-transitions-contact">Contact</a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer transition:persist="footer">
+      <p>View Transitions with Astro • Navigation preserved across page changes</p>
+    </footer>
+
+    <style is:global>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #0f172a;
+        color: white;
+        line-height: 1.6;
+      }
+
+      nav {
+        background: rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .nav-title {
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+
+      .nav-links a:hover {
+        color: #667eea;
+      }
+
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        min-height: calc(100vh - 120px);
+      }
+
+      footer {
+        background: rgba(15, 23, 42, 0.9);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      @media (max-width: 768px) {
+        .nav-container {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .nav-links {
+          flex-direction: column;
+          gap: 0.5rem;
+          text-align: center;
+        }
+
+        main {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </body>
+</html>

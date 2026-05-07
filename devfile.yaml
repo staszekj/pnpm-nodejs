@@ -1,0 +1,98 @@
+schemaVersion: 2.2.0
+metadata:
+  name: pnpm-nodejs
+  version: 1.0.0
+
+components:
+  - name: dev
+    container:
+      image: mcr.microsoft.com/devcontainers/javascript-node:22
+      memoryLimit: 2Gi
+      memoryRequest: 512Mi
+      cpuLimit: 2000m
+      cpuRequest: 250m
+      mountSources: true
+      sourceMapping: /workspace
+      volumeMounts:
+        - name: workspace
+          path: /workspace
+      env:
+        - name: SHELL
+          value: /usr/bin/zsh
+
+volumes:
+  - name: workspace
+    size: 5Gi
+
+commands:
+  - id: install-nvm
+    exec:
+      component: dev
+      commandLine: |
+        set -e
+        USER_NAME="${USER:-vscode}"
+        USER_HOME=$(getent passwd "$USER_NAME" 2>/dev/null | cut -d: -f6)
+        USER_HOME=${USER_HOME:-/home/$USER_NAME}
+        
+        # Install nvm
+        if [ ! -d "$USER_HOME/.nvm" ]; then
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+        fi
+        
+        # Add nvm to .zshrc
+        test -f "$USER_HOME/.zshrc" || touch "$USER_HOME/.zshrc"
+        grep -q 'NVM_DIR' "$USER_HOME/.zshrc" || {
+          echo '' >> "$USER_HOME/.zshrc"
+          echo '# NVM configuration' >> "$USER_HOME/.zshrc"
+          echo 'export NVM_DIR="$HOME/.nvm"' >> "$USER_HOME/.zshrc"
+          echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> "$USER_HOME/.zshrc"
+          echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> "$USER_HOME/.zshrc"
+        }
+      group:
+        kind: build
+        isDefault: true
+
+  - id: setup-zsh
+    exec:
+      component: dev
+      commandLine: |
+        set -e
+        USER_NAME="${USER:-vscode}"
+        USER_HOME=$(getent passwd "$USER_NAME" 2>/dev/null | cut -d: -f6)
+        USER_HOME=${USER_HOME:-/home/$USER_NAME}
+        
+        # Install dependencies
+        export DEBIAN_FRONTEND=noninteractive
+        sudo apt-get -yq update >/dev/null
+        sudo apt-get -yq install zsh git curl >/dev/null
+        
+        # Install oh-my-zsh
+        if [ ! -d "$USER_HOME/.oh-my-zsh" ]; then
+          RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended >/dev/null 2>&1 || true
+        fi
+        
+        # Install powerlevel10k
+        if [ ! -d "$USER_HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
+          git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$USER_HOME/.oh-my-zsh/custom/themes/powerlevel10k" >/dev/null 2>&1 || true
+        fi
+        
+        # Configure .zshrc
+        test -f "$USER_HOME/.zshrc" || cp "$USER_HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$USER_HOME/.zshrc" || true
+        awk 'BEGIN{replaced=0} /^ZSH_THEME=/{print "ZSH_THEME=powerlevel10k/powerlevel10k"; replaced=1; next} {print} END{if(!replaced)print "ZSH_THEME=powerlevel10k/powerlevel10k"}' "$USER_HOME/.zshrc" > "$USER_HOME/.zshrc.tmp" && mv "$USER_HOME/.zshrc.tmp" "$USER_HOME/.zshrc" || true
+        
+        # Set zsh as default shell
+        sudo chsh -s /usr/bin/zsh "$USER_NAME" >/dev/null 2>&1 || true
+        
+        # Auto-switch bash to zsh
+        test -f "$USER_HOME/.bashrc" || touch "$USER_HOME/.bashrc"
+        grep -q "exec /usr/bin/zsh" "$USER_HOME/.bashrc" || {
+          echo "# Auto-switch to zsh for interactive bash shells" >> "$USER_HOME/.bashrc"
+          echo "[ -t 1 ] && exec /usr/bin/zsh" >> "$USER_HOME/.bashrc"
+        }
+      group:
+        kind: build
+
+events:
+  postStart:
+    - install-nvm
+    - setup-zsh

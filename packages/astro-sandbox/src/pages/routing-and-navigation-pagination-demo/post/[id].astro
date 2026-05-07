@@ -1,0 +1,387 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+// Individual blog post page (demonstrates URL structure with pagination)
+
+interface BlogPost {
+  id: number;
+  title: string;
+  content: string;
+  author: string;
+  date: string;
+  category: string;
+  tags: string[];
+  readTime: number;
+}
+
+// Generate sample blog posts (same IDs as pagination)
+const allPosts: BlogPost[] = Array.from({ length: 50 }, (_, i) => ({
+  id: i + 1,
+  title: `Blog Post ${i + 1}: ${['Introduction to Web Development', 'Advanced TypeScript Patterns', 'Building with Astro', 'React Best Practices', 'CSS Grid Mastery'][i % 5]!}`,
+  content: `This is the full content for blog post ${i + 1}.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius enim at mauris gravida, vel dictum velit congue. Sed euismod nunc vitae ipsum sollicitudin hendrerit.\n\nPellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante.`,
+  author: ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'][i % 5]!,
+  date: new Date(2024 - Math.floor(i / 12), i % 12, 1).toISOString().split('T')[0]!,
+  category: ['Technology', 'Design', 'Development', 'DevOps', 'Tutorial'][i % 5]!,
+  tags: [
+    ['javascript', 'web'],
+    ['typescript', 'types'],
+    ['astro', 'ssr'],
+    ['react', 'hooks'],
+    ['css', 'layout'],
+  ][i % 5]!,
+  readTime: Math.floor(Math.random() * 10) + 3,
+}));
+
+export const getStaticPaths = (() => {
+  return allPosts.map((post) => ({
+    params: { id: post.id.toString() },
+    props: { post },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{post.title}</title>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="/routing-and-navigation-pagination-demo">← Back to All Posts</a>
+      </nav>
+
+      <article class="post">
+        <header class="post-header">
+          <div class="meta-top">
+            <span class="category">{post.category}</span>
+            <span class="read-time">📖 {post.readTime} min read</span>
+          </div>
+          <h1>{post.title}</h1>
+          <div class="meta-bottom">
+            <span class="author">By {post.author}</span>
+            <span class="date">{post.date}</span>
+          </div>
+          <div class="tags">
+            {post.tags.map((tag) => <span class="tag">#{tag}</span>)}
+          </div>
+        </header>
+
+        <div class="post-content">
+          {post.content.split('\n\n').map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+
+        <footer class="post-footer">
+          <div class="share">
+            <h3>Share this post:</h3>
+            <div class="share-buttons">
+              <button class="share-button">Twitter</button>
+              <button class="share-button">Facebook</button>
+              <button class="share-button">LinkedIn</button>
+              <button class="share-button">Copy Link</button>
+            </div>
+          </div>
+        </footer>
+      </article>
+
+      <div class="post-navigation">
+        {
+          post.id > 1 && (
+            <a
+              href={`/routing-and-navigation-pagination-demo/post/${post.id - 1}`}
+              class="nav-link prev"
+            >
+              ← Previous Post
+              <span class="nav-title">Post {post.id - 1}</span>
+            </a>
+          )
+        }
+        {
+          post.id < 50 && (
+            <a
+              href={`/routing-and-navigation-pagination-demo/post/${post.id + 1}`}
+              class="nav-link next"
+            >
+              Next Post →<span class="nav-title">Post {post.id + 1}</span>
+            </a>
+          )
+        }
+      </div>
+
+      <section class="related">
+        <h2>Related Posts</h2>
+        <div class="related-grid">
+          {
+            allPosts
+              .filter((p) => p.category === post.category && p.id !== post.id)
+              .slice(0, 3)
+              .map((related) => (
+                <a
+                  href={`/routing-and-navigation-pagination-demo/post/${related.id}`}
+                  class="related-card"
+                >
+                  <h3>{related.title}</h3>
+                  <p>
+                    By {related.author} • {related.date}
+                  </p>
+                </a>
+              ))
+          }
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
+
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    line-height: 1.8;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .breadcrumb {
+    margin-bottom: 2rem;
+  }
+
+  .breadcrumb a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+
+  .breadcrumb a:hover {
+    opacity: 0.7;
+  }
+
+  .post {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 3rem;
+    margin-bottom: 2rem;
+  }
+
+  .post-header {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .meta-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .category {
+    background: rgba(251, 191, 36, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+
+  .read-time {
+    opacity: 0.8;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .meta-bottom {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+
+  .post-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
+
+  .post-content p {
+    margin-bottom: 1.5rem;
+  }
+
+  .post-footer {
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+    padding-top: 2rem;
+    margin-top: 3rem;
+  }
+
+  .share h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .share-button {
+    padding: 0.75rem 1.5rem;
+    background: rgba(59, 130, 246, 0.3);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .share-button:hover {
+    background: rgba(59, 130, 246, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .post-navigation {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .nav-link {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .nav-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .nav-link.next {
+    text-align: right;
+    margin-left: auto;
+  }
+
+  .nav-title {
+    opacity: 0.7;
+    font-size: 0.9rem;
+  }
+
+  .related {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+  }
+
+  .related h2 {
+    margin-bottom: 1.5rem;
+    color: #fbbf24;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .related-card {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .related-card:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(251, 191, 36, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .related-card h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .related-card p {
+    opacity: 0.7;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      padding: 1rem;
+    }
+
+    .post {
+      padding: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    .post-content {
+      font-size: 1rem;
+    }
+
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

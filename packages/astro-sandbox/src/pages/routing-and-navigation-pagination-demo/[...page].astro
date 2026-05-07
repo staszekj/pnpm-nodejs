@@ -1,0 +1,512 @@
+---
+import type { GetStaticPaths } from 'astro';
+import type { Page } from 'astro';
+
+// Advanced: Pagination with Astro's paginate() function
+// Demonstrates page navigation, metadata, and nested pagination
+
+interface BlogPost {
+  id: number;
+  title: string;
+  excerpt: string;
+  author: string;
+  date: string;
+  category: string;
+  tags: string[];
+}
+
+// Generate sample blog posts
+const allPosts: BlogPost[] = Array.from({ length: 50 }, (_, i) => ({
+  id: i + 1,
+  title: `Blog Post ${i + 1}: ${['Introduction to Web Development', 'Advanced TypeScript Patterns', 'Building with Astro', 'React Best Practices', 'CSS Grid Mastery'][i % 5]!}`,
+  excerpt: `This is an excerpt for blog post ${i + 1}. It provides a brief overview of the content and entices readers to click through.`,
+  author: ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'][i % 5]!,
+  date: new Date(2024 - Math.floor(i / 12), i % 12, 1).toISOString().split('T')[0]!,
+  category: ['Technology', 'Design', 'Development', 'DevOps', 'Tutorial'][i % 5]!,
+  tags: [
+    ['javascript', 'web'],
+    ['typescript', 'types'],
+    ['astro', 'ssr'],
+    ['react', 'hooks'],
+    ['css', 'layout'],
+  ][i % 5]!,
+}));
+
+export const getStaticPaths = (({ paginate }) => {
+  // Use Astro's paginate() function to create pages
+  return paginate(allPosts, {
+    pageSize: 10, // Number of items per page
+  });
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: Page<BlogPost>;
+}
+
+const { page } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Paginated Blog - Page {page.currentPage}</title>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>📚 Paginated Blog Posts</h1>
+        <p class="subtitle">
+          Demonstrating Astro's pagination with {page.total} posts across {page.lastPage} pages
+        </p>
+      </header>
+
+      <div class="pagination-info">
+        <div class="info-badge">
+          <strong>Current Page:</strong>
+          {page.currentPage} of {page.lastPage}
+        </div>
+        <div class="info-badge">
+          <strong>Posts on this page:</strong>
+          {page.data.length}
+        </div>
+        <div class="info-badge">
+          <strong>Total Posts:</strong>
+          {page.total}
+        </div>
+      </div>
+
+      <div class="posts-grid">
+        {
+          page.data.map((post) => (
+            <article class="post-card">
+              <div class="post-header">
+                <span class="category">{post.category}</span>
+                <span class="date">{post.date}</span>
+              </div>
+              <h2 class="post-title">{post.title}</h2>
+              <p class="post-excerpt">{post.excerpt}</p>
+              <div class="post-meta">
+                <span class="author">By {post.author}</span>
+                <div class="tags">
+                  {post.tags.map((tag) => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+              </div>
+              <a href={`/routing-and-navigation-pagination-demo/post/${post.id}`} class="read-more">
+                Read More →
+              </a>
+            </article>
+          ))
+        }
+      </div>
+
+      <nav class="pagination" aria-label="Pagination">
+        <div class="pagination-controls">
+          {
+            page.url.prev ? (
+              <>
+                <a href="/routing-and-navigation-pagination-demo" class="page-button">
+                  ⏮️ First
+                </a>
+                <a href={page.url.prev} class="page-button">
+                  ← Previous
+                </a>
+              </>
+            ) : (
+              <>
+                <span class="page-button disabled">⏮️ First</span>
+                <span class="page-button disabled">← Previous</span>
+              </>
+            )
+          }
+
+          <div class="page-numbers">
+            {
+              Array.from({ length: page.lastPage }, (_, i) => i + 1).map((pageNum) => {
+                const url =
+                  pageNum === 1
+                    ? '/routing-and-navigation-pagination-demo'
+                    : `/routing-and-navigation-pagination-demo/${pageNum}`;
+
+                if (pageNum === page.currentPage) {
+                  return (
+                    <span class="page-number current" aria-current="page">
+                      {pageNum}
+                    </span>
+                  );
+                }
+
+                // Show ellipsis for pages far from current
+                if (
+                  pageNum > 2 &&
+                  pageNum < page.lastPage - 1 &&
+                  (pageNum < page.currentPage - 2 || pageNum > page.currentPage + 2)
+                ) {
+                  if (pageNum === 3 || pageNum === page.lastPage - 2) {
+                    return <span class="ellipsis">...</span>;
+                  }
+                  return null;
+                }
+
+                return (
+                  <a href={url} class="page-number">
+                    {pageNum}
+                  </a>
+                );
+              })
+            }
+          </div>
+
+          {
+            page.url.next ? (
+              <>
+                <a href={page.url.next} class="page-button">
+                  Next →
+                </a>
+                <a
+                  href={`/routing-and-navigation-pagination-demo/${page.lastPage}`}
+                  class="page-button"
+                >
+                  Last ⏭️
+                </a>
+              </>
+            ) : (
+              <>
+                <span class="page-button disabled">Next →</span>
+                <span class="page-button disabled">Last ⏭️</span>
+              </>
+            )
+          }
+        </div>
+      </nav>
+
+      <section class="code-examples">
+        <h2>Pagination Code Examples</h2>
+
+        <div class="code-block">
+          <h3>1. Configure getStaticPaths with paginate()</h3>
+          <pre><code>export const getStaticPaths = (&#123;&#123; paginate &#125;&#125;) => &#123;
+  return paginate(allPosts, &#123;
+    pageSize: 10,
+  &#125;);
+&#125; satisfies GetStaticPaths;</code></pre>
+        </div>
+
+        <div class="code-block">
+          <h3>2. Access Page Data and Metadata</h3>
+          <pre><code>const &#123; page &#125; = Astro.props;
+
+// Available properties:
+page.data         // Current page items
+page.currentPage  // Current page number
+page.lastPage     // Total number of pages
+page.total        // Total items
+page.url.prev     // Previous page URL
+page.url.next     // Next page URL
+page.url.current  // Current page URL</code></pre>
+        </div>
+
+        <div class="code-block">
+          <h3>3. Render Paginated Items</h3>
+          <pre><code>&#123;page.data.map((item) => (
+  &lt;article&gt;
+    &lt;h2&gt;&#123;item.title&#125;&lt;/h2&gt;
+    &lt;p&gt;&#123;item.excerpt&#125;&lt;/p&gt;
+  &lt;/article&gt;
+))&#125;</code></pre>
+        </div>
+
+        <div class="code-block">
+          <h3>4. Build Pagination Navigation</h3>
+          <pre><code>&#123;page.url.prev ? (
+  &lt;a href=&#123;page.url.prev&#125;&gt;Previous&lt;/a&gt;
+) : (
+  &lt;span class="disabled"&gt;Previous&lt;/span&gt;
+)&#125;
+
+&lt;span&gt;Page &#123;page.currentPage&#125; of &#123;page.lastPage&#125;&lt;/span&gt;
+
+&#123;page.url.next ? (
+  &lt;a href=&#123;page.url.next&#125;&gt;Next&lt;/a&gt;
+) : (
+  &lt;span class="disabled"&gt;Next&lt;/span&gt;
+)&#125;</code></pre>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
+
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    line-height: 1.6;
+    padding: 2rem;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  .pagination-info {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .info-badge {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .post-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .category {
+    background: rgba(59, 130, 246, 0.3);
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .date {
+    font-size: 0.9rem;
+    opacity: 0.7;
+  }
+
+  .post-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+    color: #fbbf24;
+  }
+
+  .post-excerpt {
+    margin-bottom: 1rem;
+    opacity: 0.9;
+    line-height: 1.6;
+  }
+
+  .post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .author {
+    opacity: 0.8;
+    font-size: 0.9rem;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+
+  .read-more {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(251, 191, 36, 0.2);
+    border: 1px solid #fbbf24;
+    border-radius: 6px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+
+  .read-more:hover {
+    background: #fbbf24;
+    color: #1e3a8a;
+  }
+
+  .pagination {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .page-button,
+  .page-number {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .page-button:hover:not(.disabled),
+  .page-number:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: white;
+  }
+
+  .page-button.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .page-number.current {
+    background: #fbbf24;
+    border-color: #fbbf24;
+    color: #1e3a8a;
+    font-weight: bold;
+  }
+
+  .page-numbers {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .ellipsis {
+    padding: 0.5rem;
+    opacity: 0.5;
+  }
+
+  .code-examples {
+    margin-top: 4rem;
+  }
+
+  .code-examples h2 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #fbbf24;
+  }
+
+  .code-block {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .code-block h3 {
+    color: #fbbf24;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .code-block pre {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  .code-block code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      padding: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .pagination-controls {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .page-numbers {
+      order: -1;
+    }
+  }
+</style>

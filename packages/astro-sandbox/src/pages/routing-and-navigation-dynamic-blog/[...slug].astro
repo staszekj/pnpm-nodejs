@@ -1,0 +1,238 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Layout from '../../layouts/Layout.astro';
+
+// Advanced: Dynamic routes with rest parameters and multiple depths
+export const getStaticPaths = (() => {
+  const posts = [
+    {
+      slug: undefined,
+      title: 'Blog Home',
+      content: 'Welcome to the advanced routing demo blog!',
+      category: 'root',
+    },
+    {
+      slug: 'typescript',
+      title: 'TypeScript Category',
+      content: 'All about TypeScript',
+      category: 'tech',
+    },
+    {
+      slug: 'typescript/advanced-types',
+      title: 'Advanced TypeScript Types',
+      content: 'Deep dive into TypeScript utility types, mapped types, and conditional types.',
+      category: 'tech',
+    },
+    {
+      slug: 'typescript/decorators/metadata',
+      title: 'TypeScript Decorators with Metadata',
+      content: 'Multi-level routing example showing decorators and reflection.',
+      category: 'tech',
+    },
+    {
+      slug: 'astro/routing/dynamic',
+      title: 'Dynamic Routing in Astro',
+      content: 'This page demonstrates multi-level dynamic routing with rest parameters.',
+      category: 'framework',
+    },
+  ];
+
+  return posts.map(({ slug, title, content, category }) => ({
+    params: { slug },
+    props: { title, content, category, slug: slug || 'home' },
+  }));
+}) satisfies GetStaticPaths;
+
+const { title, content, category, slug } = Astro.props;
+const breadcrumbs = slug === 'home' ? [] : slug.split('/');
+---
+
+<Layout title={title}>
+  <div class="container">
+    <nav class="breadcrumbs">
+      <a href="/routing-and-navigation-dynamic-blog">Blog Home</a>
+      {
+        breadcrumbs.map((crumb, index) => {
+          const path = breadcrumbs.slice(0, index + 1).join('/');
+          return (
+            <>
+              <span> / </span>
+              <a href={`/routing-and-navigation-dynamic-blog/${path}`}>{crumb}</a>
+            </>
+          );
+        })
+      }
+    </nav>
+
+    <article>
+      <header>
+        <span class="category">{category}</span>
+        <h1>{title}</h1>
+        <p class="meta">Route depth: {breadcrumbs.length} levels</p>
+      </header>
+
+      <div class="content">
+        <p>{content}</p>
+
+        <div class="route-info">
+          <h3>🔍 Route Information</h3>
+          <dl>
+            <dt>Params:</dt>
+            <dd>
+              <code>{JSON.stringify(Astro.params, null, 2)}</code>
+            </dd>
+            <dt>URL:</dt>
+            <dd>
+              <code>{Astro.url.pathname}</code>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </article>
+
+    <aside class="demo-links">
+      <h3>Try These Routes:</h3>
+      <ul>
+        <li>
+          <a href="/routing-and-navigation-dynamic-blog">Blog Root (undefined slug)</a>
+        </li>
+        <li>
+          <a href="/routing-and-navigation-dynamic-blog/typescript">Single Level</a>
+        </li>
+        <li>
+          <a href="/routing-and-navigation-dynamic-blog/typescript/advanced-types">Two Levels</a>
+        </li>
+        <li>
+          <a href="/routing-and-navigation-dynamic-blog/typescript/decorators/metadata">
+            Three Levels
+          </a>
+        </li>
+        <li>
+          <a href="/routing-and-navigation-dynamic-blog/astro/routing/dynamic">
+            Multi-Level Path
+          </a>
+        </li>
+      </ul>
+    </aside>
+  </div>
+</Layout>
+
+<style>
+  .container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .breadcrumbs a {
+    color: rgb(var(--accent));
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  article {
+    background: rgba(var(--accent-light), 0.1);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+  }
+
+  header {
+    margin-bottom: 1.5rem;
+  }
+
+  .category {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgb(var(--accent));
+    color: white;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    margin: 0.5rem 0;
+    font-size: 2rem;
+  }
+
+  .meta {
+    color: #999;
+    font-size: 0.9rem;
+  }
+
+  .route-info {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+  }
+
+  .route-info h3 {
+    margin-top: 0;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1rem;
+  }
+
+  dt {
+    font-weight: bold;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  code {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.5rem;
+    border-radius: 4px;
+    display: block;
+    white-space: pre-wrap;
+    font-size: 0.85rem;
+  }
+
+  .demo-links {
+    background: rgba(var(--accent-dark), 0.1);
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+
+  .demo-links ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .demo-links li {
+    margin: 0.75rem 0;
+  }
+
+  .demo-links a {
+    color: rgb(var(--accent-light));
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .demo-links a:hover {
+    text-decoration: underline;
+  }
+
+  .demo-links a::before {
+    content: '→';
+    margin-right: 0.5rem;
+  }
+</style>

@@ -1,0 +1,313 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Advanced API Endpoints Demo">
+  <div class="container">
+    <h1>🔌 Advanced API Endpoints</h1>
+    <p class="subtitle">Multi-method CRUD API with GET, POST, PUT, PATCH, DELETE operations</p>
+
+    <div class="api-docs">
+      <section>
+        <h2>API Endpoints</h2>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <code>/routing-and-navigation-api-users/[id]</code>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <code>/routing-and-navigation-api-users/all</code>
+        </div>
+        <div class="endpoint">
+          <span class="method put">PUT</span>
+          <code>/routing-and-navigation-api-users/[id]</code>
+        </div>
+        <div class="endpoint">
+          <span class="method patch">PATCH</span>
+          <code>/routing-and-navigation-api-users/[id]</code>
+        </div>
+        <div class="endpoint">
+          <span class="method delete">DELETE</span>
+          <code>/routing-and-navigation-api-users/[id]</code>
+        </div>
+      </section>
+
+      <section class="demo">
+        <h2>Interactive Demo</h2>
+
+        <div class="action-group">
+          <h3>GET Requests</h3>
+          <button id="get-all">Get All Users</button>
+          <button id="get-one">Get User #1</button>
+          <button id="get-filtered">Get Users by Role (admin)</button>
+        </div>
+
+        <div class="action-group">
+          <h3>POST Request (Create)</h3>
+          <div class="form">
+            <input type="text" id="post-name" placeholder="Name" value="Charlie New" />
+            <input type="email" id="post-email" placeholder="Email" value="charlie@example.com" />
+            <select id="post-role">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button id="post-create">Create User</button>
+          </div>
+        </div>
+
+        <div class="action-group">
+          <h3>PATCH Request (Update)</h3>
+          <div class="form">
+            <input type="text" id="patch-id" placeholder="User ID" value="1" />
+            <input type="text" id="patch-name" placeholder="New Name" value="Alice Updated" />
+            <button id="patch-update">Update User</button>
+          </div>
+        </div>
+
+        <div class="action-group">
+          <h3>DELETE Request</h3>
+          <div class="form">
+            <input type="text" id="delete-id" placeholder="User ID" value="2" />
+            <button id="delete-user">Delete User</button>
+          </div>
+        </div>
+
+        <div class="response">
+          <h3>Response:</h3>
+          <pre id="response-output">Click a button to see the API response...</pre>
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const output = document.getElementById('response-output') as HTMLPreElement;
+
+  async function displayResponse(response: Response) {
+    const contentType = response.headers.get('content-type');
+    let data: unknown;
+
+    if (contentType?.includes('application/json')) {
+      data = await response.json();
+    } else {
+      data = await response.text();
+    }
+
+    output.textContent = JSON.stringify(
+      {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+        data,
+      },
+      null,
+      2
+    );
+  }
+
+  // GET All Users
+  document.getElementById('get-all')?.addEventListener('click', async () => {
+    const response = await fetch('/routing-and-navigation-api-users/all');
+    await displayResponse(response);
+  });
+
+  // GET Single User
+  document.getElementById('get-one')?.addEventListener('click', async () => {
+    const response = await fetch('/routing-and-navigation-api-users/1');
+    await displayResponse(response);
+  });
+
+  // GET Filtered
+  document.getElementById('get-filtered')?.addEventListener('click', async () => {
+    const response = await fetch('/routing-and-navigation-api-users/all?role=admin');
+    await displayResponse(response);
+  });
+
+  // POST Create
+  document.getElementById('post-create')?.addEventListener('click', async () => {
+    const name = (document.getElementById('post-name') as HTMLInputElement).value;
+    const email = (document.getElementById('post-email') as HTMLInputElement).value;
+    const role = (document.getElementById('post-role') as HTMLSelectElement).value;
+
+    const response = await fetch('/routing-and-navigation-api-users/all', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, role }),
+    });
+
+    await displayResponse(response);
+  });
+
+  // PATCH Update
+  document.getElementById('patch-update')?.addEventListener('click', async () => {
+    const id = (document.getElementById('patch-id') as HTMLInputElement).value;
+    const name = (document.getElementById('patch-name') as HTMLInputElement).value;
+
+    const response = await fetch(`/routing-and-navigation-api-users/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+
+    await displayResponse(response);
+  });
+
+  // DELETE User
+  document.getElementById('delete-user')?.addEventListener('click', async () => {
+    const id = (document.getElementById('delete-id') as HTMLInputElement).value;
+
+    const response = await fetch(`/routing-and-navigation-api-users/${id}`, {
+      method: 'DELETE',
+    });
+
+    await displayResponse(response);
+  });
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: #999;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .api-docs {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+  }
+
+  section {
+    background: rgba(var(--accent-light), 0.1);
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+
+  .endpoint {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+  }
+
+  .method {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .method.get {
+    background: #61affe;
+    color: white;
+  }
+  .method.post {
+    background: #49cc90;
+    color: white;
+  }
+  .method.put {
+    background: #fca130;
+    color: white;
+  }
+  .method.patch {
+    background: #50e3c2;
+    color: white;
+  }
+  .method.delete {
+    background: #f93e3e;
+    color: white;
+  }
+
+  .action-group {
+    margin: 1.5rem 0;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .action-group:last-of-type {
+    border-bottom: none;
+  }
+
+  .action-group h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  .form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  input,
+  select {
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    border-radius: 4px;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    background: rgb(var(--accent));
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.2s;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+
+  .response {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid rgb(var(--accent));
+  }
+
+  .response h3 {
+    margin-top: 0;
+  }
+
+  pre {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 768px) {
+    .api-docs {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,70 @@
+---
+const { user } = Astro.locals;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Protected Page</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔒 Protected Page</h1>
+      <p>This page is only accessible to authenticated users (user or admin roles).</p>
+
+      <div class="success-panel">
+        <h2>✅ Access Granted</h2>
+        <p>Welcome, <strong>{user?.name}</strong>!</p>
+        <p>Your role: <span class={`role ${user?.role}`}>{user?.role}</span></p>
+      </div>
+
+      <a href="/routing-and-navigation-middleware-demo">← Back to Middleware Demo</a>
+    </div>
+
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 2rem;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .container {
+        max-width: 600px;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .success-panel {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+      }
+
+      .role {
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        font-weight: bold;
+      }
+
+      a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        border-bottom: 2px solid white;
+      }
+    </style>
+  </body>
+</html>

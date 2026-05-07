@@ -1,0 +1,324 @@
+---
+// This page demonstrates middleware with context.locals
+const { user, requestId, requestTime } = Astro.locals;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Middleware Demo</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔐 Middleware Demo</h1>
+      <p class="subtitle">
+        Advanced authentication, request tracking, and rewriting with context.locals
+      </p>
+
+      <div class="info-grid">
+        <section class="panel">
+          <h2>Current User (from middleware)</h2>
+          <div class="user-info">
+            <p><strong>Name:</strong> {user?.name}</p>
+            <p><strong>Role:</strong> <span class={`role ${user?.role}`}>{user?.role}</span></p>
+            <p><strong>ID:</strong> {user?.id}</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Request Metadata</h2>
+          <div class="metadata">
+            <p><strong>Request ID:</strong> <code>{requestId}</code></p>
+            <p><strong>Request Time:</strong> {new Date(requestTime).toISOString()}</p>
+            <p><strong>URL:</strong> {Astro.url.pathname}</p>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel demo">
+        <h2>Try Different Authentication Levels</h2>
+        <p>Set cookies to change your authentication level:</p>
+
+        <div class="auth-buttons">
+          <button id="set-admin">Login as Admin</button>
+          <button id="set-user">Login as User</button>
+          <button id="set-guest">Logout (Guest)</button>
+        </div>
+
+        <h3>Protected Routes</h3>
+        <div class="route-links">
+          <a href="/routing-and-navigation-middleware-protected" class="link">
+            🔒 Protected Page (User/Admin only)
+          </a>
+          <a href="/routing-and-navigation-middleware-admin" class="link admin">
+            👑 Admin Page (Admin only)
+          </a>
+          <a href="/routing-and-navigation-middleware-public" class="link public">
+            🌍 Public Page (Everyone)
+          </a>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Middleware Features Demonstrated</h2>
+        <ul class="features">
+          <li>
+            <strong>Request Tracking:</strong> Unique request ID and response time in headers
+          </li>
+          <li>
+            <strong>Authentication:</strong> Role-based access control (guest/user/admin)
+          </li>
+          <li>
+            <strong>context.locals:</strong> Shared state across middleware and pages
+          </li>
+          <li>
+            <strong>Rewrites:</strong> context.rewrite() for transparent URL changes
+          </li>
+          <li>
+            <strong>Chaining:</strong> sequence() to compose multiple middleware functions
+          </li>
+          <li>
+            <strong>Conditional Logic:</strong> Different behavior based on route patterns
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel code-example">
+        <h2>Code Snippets</h2>
+
+        <h3>Middleware Setup (src/middleware.ts)</h3>
+        <pre><code>export const onRequest = sequence(
+  requestTracker,    // Add request ID/time
+  authChecker,       // Check authentication
+  rateLimiter        // Rate limiting for APIs
+);</code></pre>
+
+        <h3>Using context.locals in Pages</h3>
+        <pre><code>---
+const &#123; user, requestId &#125; = Astro.locals;
+---
+
+&lt;p&gt;Welcome, &#123;user?.name&#125;!&lt;/p&gt;
+&lt;p&gt;Request ID: &#123;requestId&#125;&lt;/p&gt;</code></pre>
+
+        <h3>Rewriting URLs</h3>
+        <pre><code>if (user.role !== 'admin') &#123;
+  return context.rewrite('/access-denied');
+&#125;</code></pre>
+      </section>
+    </div>
+
+    <script>
+      // Set authentication cookies
+      document.getElementById('set-admin')?.addEventListener('click', () => {
+        document.cookie = 'auth-token=admin-token; path=/; max-age=3600';
+        location.reload();
+      });
+
+      document.getElementById('set-user')?.addEventListener('click', () => {
+        document.cookie = 'auth-token=user-token; path=/; max-age=3600';
+        location.reload();
+      });
+
+      document.getElementById('set-guest')?.addEventListener('click', () => {
+        document.cookie = 'auth-token=; path=/; max-age=0';
+        location.reload();
+      });
+    </script>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        line-height: 1.6;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 1.5rem;
+      }
+
+      .panel h2 {
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+      }
+
+      .panel h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        font-size: 1.2rem;
+      }
+
+      .user-info p,
+      .metadata p {
+        margin: 0.5rem 0;
+      }
+
+      .role {
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+      }
+
+      .role.admin {
+        background: #f59e0b;
+        color: white;
+      }
+
+      .role.user {
+        background: #10b981;
+        color: white;
+      }
+
+      .role.guest {
+        background: #6b7280;
+        color: white;
+      }
+
+      code {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+
+      .auth-buttons {
+        display: flex;
+        gap: 1rem;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 0.75rem 1.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid white;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      button:hover {
+        background: white;
+        color: #667eea;
+        transform: translateY(-2px);
+      }
+
+      .route-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1rem;
+      }
+
+      .link {
+        display: block;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        text-decoration: none;
+        color: white;
+        font-weight: 500;
+        transition: all 0.2s;
+        border-left: 4px solid transparent;
+      }
+
+      .link:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateX(5px);
+      }
+
+      .link.admin {
+        border-left-color: #f59e0b;
+      }
+
+      .link.public {
+        border-left-color: #10b981;
+      }
+
+      .features {
+        list-style: none;
+        padding: 0;
+      }
+
+      .features li {
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        border-left: 3px solid #10b981;
+      }
+
+      .code-example pre {
+        background: rgba(0, 0, 0, 0.4);
+        padding: 1rem;
+        border-radius: 6px;
+        overflow-x: auto;
+        margin-top: 0.5rem;
+      }
+
+      .code-example code {
+        background: none;
+        padding: 0;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        .auth-buttons {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </body>
+</html>

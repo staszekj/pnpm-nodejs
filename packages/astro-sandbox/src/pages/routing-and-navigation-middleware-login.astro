@@ -1,0 +1,118 @@
+---
+// This page is shown when unauthenticated users try to access protected content
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Login Required</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔐 Login Required</h1>
+      <p>Please authenticate to access this page.</p>
+
+      <div class="login-panel">
+        <h2>Authentication Needed</h2>
+        <p>This page requires you to be logged in.</p>
+
+        <div class="auth-buttons">
+          <button id="login-admin" class="button admin">Login as Admin</button>
+          <button id="login-user" class="button user">Login as User</button>
+        </div>
+
+        <div class="divider">or</div>
+
+        <a href="/routing-and-navigation-middleware-demo" class="link"> ← Back to Demo Page </a>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('login-admin')?.addEventListener('click', () => {
+        document.cookie = 'auth-token=admin-token; path=/; max-age=3600';
+        location.reload();
+      });
+
+      document.getElementById('login-user')?.addEventListener('click', () => {
+        document.cookie = 'auth-token=user-token; path=/; max-age=3600';
+        location.reload();
+      });
+    </script>
+
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        padding: 2rem;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .container {
+        max-width: 500px;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .login-panel {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+      }
+
+      .auth-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+
+      .button {
+        padding: 1rem 2rem;
+        border: 2px solid white;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 1rem;
+      }
+
+      .button.admin {
+        background: rgba(245, 158, 11, 0.3);
+      }
+
+      .button.user {
+        background: rgba(16, 185, 129, 0.3);
+      }
+
+      .button:hover {
+        background: white;
+        color: #3b82f6;
+        transform: scale(1.05);
+      }
+
+      .divider {
+        margin: 1.5rem 0;
+        opacity: 0.6;
+      }
+
+      .link {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        border-bottom: 2px solid white;
+      }
+    </style>
+  </body>
+</html>

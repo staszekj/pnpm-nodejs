@@ -1,0 +1,190 @@
+---
+import ViewTransitionsLayout from '../layouts/ViewTransitionsLayout.astro';
+---
+
+<ViewTransitionsLayout title="About - View Transitions">
+  <div class="about-page">
+    <h1 transition:name="page-title" transition:animate="slide">📖 About View Transitions</h1>
+
+    <div class="content-grid">
+      <section class="panel" transition:animate="slide">
+        <h2>What are View Transitions?</h2>
+        <p>
+          View Transitions are a modern web API that allows smooth, animated transitions between
+          different states of a page or between different pages entirely. Astro makes this
+          incredibly easy with its built-in View Transitions support.
+        </p>
+      </section>
+
+      <section class="panel" transition:animate="slide">
+        <h2>Key Benefits</h2>
+        <ul>
+          <li>Smooth page navigation without full reloads</li>
+          <li>Element morphing between pages</li>
+          <li>Persistent elements (nav, player, etc.)</li>
+          <li>Custom animation control</li>
+          <li>Better user experience</li>
+          <li>Native browser API + fallback</li>
+        </ul>
+      </section>
+
+      <section class="panel" transition:animate="slide">
+        <h2>How It Works</h2>
+        <ol>
+          <li>User clicks a link</li>
+          <li>Browser captures current state</li>
+          <li>New page content loads</li>
+          <li>Browser animates between states</li>
+          <li>Matched elements morph smoothly</li>
+        </ol>
+      </section>
+
+      <section class="panel full-width" transition:animate="slide">
+        <h2>Directives Available</h2>
+        <div class="directives-grid">
+          <div class="directive">
+            <h3>transition:name</h3>
+            <p>Unique identifier for element pairing across pages</p>
+            <code>&lt;img transition:name="hero" /&gt;</code>
+          </div>
+          <div class="directive">
+            <h3>transition:persist</h3>
+            <p>Keep element instance across navigation</p>
+            <code>&lt;video transition:persist /&gt;</code>
+          </div>
+          <div class="directive">
+            <h3>transition:animate</h3>
+            <p>Control animation direction</p>
+            <code>&lt;div transition:animate="slide" /&gt;</code>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel full-width" transition:animate="slide">
+        <h2>Browser Support</h2>
+        <p>
+          View Transitions API is supported in modern browsers. Astro provides automatic fallback
+          for browsers without native support, simulating the transitions with JavaScript.
+        </p>
+        <div class="browser-support">
+          <span class="supported">✓ Chrome 111+</span>
+          <span class="supported">✓ Edge 111+</span>
+          <span class="supported">✓ Safari (with fallback)</span>
+          <span class="supported">✓ Firefox (with fallback)</span>
+        </div>
+      </section>
+    </div>
+  </div>
+</ViewTransitionsLayout>
+
+<style>
+  .about-page {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .panel {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    border-radius: 12px;
+    padding: 2rem;
+  }
+
+  .panel.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .panel h2 {
+    color: #667eea;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+
+  .panel h3 {
+    color: #fbbf24;
+    margin-bottom: 0.5rem;
+  }
+
+  .panel p {
+    line-height: 1.8;
+    opacity: 0.9;
+  }
+
+  .panel ul,
+  .panel ol {
+    padding-left: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .panel li {
+    margin: 0.75rem 0;
+    line-height: 1.6;
+  }
+
+  .directives-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .directive {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 3px solid #667eea;
+  }
+
+  .directive code {
+    display: block;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-top: 0.75rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #fbbf24;
+  }
+
+  .browser-support {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .supported {
+    padding: 0.5rem 1rem;
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid #10b981;
+    border-radius: 6px;
+    color: #10b981;
+    font-weight: bold;
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2rem;
+    }
+
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

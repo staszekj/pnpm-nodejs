@@ -1,0 +1,374 @@
+---
+// Demonstrates Astro.rewrite() for content reuse without redirects
+// This page "rewrites" to show content from another page
+
+const rewriteTarget = Astro.url.searchParams.get('target');
+
+// Demonstrate different rewrite scenarios
+if (rewriteTarget === 'blog') {
+  // Rewrite to blog listing (first page)
+  return Astro.rewrite('/routing-and-navigation-pagination-demo');
+}
+
+if (rewriteTarget === 'post') {
+  // Rewrite to a specific post
+  return Astro.rewrite(
+    `/routing-and-navigation-pagination-demo/post/${Astro.url.searchParams.get('id') || '1'}`
+  );
+}
+
+// Default: Show rewrite demonstration page
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Rewrites Demo</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔄 Astro Rewrites Demo</h1>
+      <p class="subtitle">
+        Demonstrates Astro.rewrite() for transparent content reuse without changing the URL
+      </p>
+
+      <div class="info-panel">
+        <h2>What are Rewrites?</h2>
+        <p>
+          Rewrites allow you to serve content from one route while keeping the user on another URL.
+          Unlike redirects (which change the URL), rewrites happen server-side and are transparent
+          to the user.
+        </p>
+      </div>
+
+      <section class="demo-section">
+        <h2>Try These Examples:</h2>
+
+        <div class="examples-grid">
+          <div class="example-card">
+            <h3>Rewrite to Blog List</h3>
+            <p>Shows the paginated blog list without changing the URL</p>
+            <a href="/routing-and-navigation-rewrite-demo?target=blog" class="button">
+              View Rewrite →
+            </a>
+          </div>
+
+          <div class="example-card">
+            <h3>Rewrite to Specific Post</h3>
+            <p>Shows post #5 content on this URL</p>
+            <a href="/routing-and-navigation-rewrite-demo?target=post&id=5" class="button">
+              View Rewrite →
+            </a>
+          </div>
+
+          <div class="example-card">
+            <h3>Rewrite to Another Post</h3>
+            <p>Shows post #10 content on this URL</p>
+            <a href="/routing-and-navigation-rewrite-demo?target=post&id=10" class="button">
+              View Rewrite →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="code-section">
+        <h2>Code Examples</h2>
+
+        <div class="code-block">
+          <h3>1. Basic Rewrite</h3>
+          <pre><code>---
+// Serve content from another page
+return Astro.rewrite('/other-page');
+---</code></pre>
+        </div>
+
+        <div class="code-block">
+          <h3>2. Conditional Rewrite</h3>
+          <pre><code>---
+const showAlternate = Astro.url.searchParams.get('alt');
+
+if (showAlternate) &#123;
+  return Astro.rewrite('/alternate-content');
+&#125;
+---
+
+&lt;!-- Default content shown if no rewrite --&gt;</code></pre>
+        </div>
+
+        <div class="code-block">
+          <h3>3. Dynamic Rewrite with Parameters</h3>
+          <pre><code>---
+const postId = Astro.url.searchParams.get('id');
+
+if (postId) &#123;
+  return Astro.rewrite(`/posts/$&#123;postId&#125;`);
+&#125;
+---</code></pre>
+        </div>
+
+        <div class="code-block">
+          <h3>4. Rewrite in Middleware</h3>
+          <pre><code>// src/middleware.ts
+export const onRequest = defineMiddleware((context, next) => &#123;
+  if (context.url.pathname === '/old-url') &#123;
+    return context.rewrite('/new-url');
+  &#125;
+  return next();
+&#125;);</code></pre>
+        </div>
+      </section>
+
+      <section class="comparison">
+        <h2>Redirects vs Rewrites</h2>
+        <div class="comparison-grid">
+          <div class="comparison-card redirect">
+            <h3>Redirect (Astro.redirect)</h3>
+            <ul>
+              <li>Changes browser URL</li>
+              <li>Browser makes new request</li>
+              <li>Visible to user</li>
+              <li>SEO: 301/302 status</li>
+              <li>Use for: Moved content, authentication</li>
+            </ul>
+          </div>
+
+          <div class="comparison-card rewrite">
+            <h3>Rewrite (Astro.rewrite)</h3>
+            <ul>
+              <li>URL stays the same</li>
+              <li>Server-side only</li>
+              <li>Transparent to user</li>
+              <li>SEO: Same page</li>
+              <li>Use for: A/B testing, content variants</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="use-cases">
+        <h2>Common Use Cases for Rewrites</h2>
+        <ul>
+          <li><strong>A/B Testing:</strong> Show different content to different users</li>
+          <li><strong>Localization:</strong> Serve localized content based on headers</li>
+          <li><strong>Feature Flags:</strong> Toggle features without URL changes</li>
+          <li><strong>Content Variants:</strong> Test different page layouts</li>
+          <li><strong>Legacy Support:</strong> Keep old URLs working with new content</li>
+          <li><strong>API Versioning:</strong> Route to different API versions</li>
+        </ul>
+      </section>
+
+      <nav class="bottom-nav">
+        <a href="/routing-and-navigation-pagination-demo" class="nav-button">
+          View Pagination Example →
+        </a>
+      </nav>
+    </div>
+  </body>
+</html>
+
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    line-height: 1.6;
+    padding: 2rem;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 3rem;
+  }
+
+  .info-panel,
+  .demo-section,
+  .code-section,
+  .comparison,
+  .use-cases {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  h2 {
+    color: #fbbf24;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+  }
+
+  h3 {
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+  }
+
+  .examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .example-card {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .example-card h3 {
+    color: #fbbf24;
+    margin-bottom: 0.75rem;
+  }
+
+  .example-card p {
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+
+  .button,
+  .nav-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: rgba(251, 191, 36, 0.2);
+    border: 2px solid #fbbf24;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+
+  .button:hover,
+  .nav-button:hover {
+    background: #fbbf24;
+    color: #6366f1;
+    transform: translateY(-2px);
+  }
+
+  .code-block {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .code-block h3 {
+    color: #fbbf24;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .code-block pre {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  .code-block code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  .comparison-card {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    border-radius: 8px;
+    border-left: 4px solid;
+  }
+
+  .comparison-card.redirect {
+    border-left-color: #ef4444;
+  }
+
+  .comparison-card.rewrite {
+    border-left-color: #10b981;
+  }
+
+  .comparison-card h3 {
+    margin-bottom: 1rem;
+  }
+
+  .comparison-card ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .comparison-card li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+  }
+
+  .comparison-card li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+  }
+
+  .use-cases ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .use-cases li {
+    padding: 1rem;
+    margin: 0.75rem 0;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    border-left: 3px solid #10b981;
+  }
+
+  .bottom-nav {
+    text-align: center;
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      padding: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    .examples-grid,
+    .comparison-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
