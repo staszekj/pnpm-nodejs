@@ -12,7 +12,8 @@
     "format": "pnpm --filter=astro-sandbox format",
     "format:check": "pnpm --filter=astro-sandbox format:check",
     "type-check": "pnpm --filter=astro-sandbox type-check",
-    "type-check:watch": "pnpm --filter=astro-sandbox type-check:watch"
+    "type-check:watch": "pnpm --filter=astro-sandbox type-check:watch",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +21,17 @@
   "engines": {
     "node": ">=18.14.1",
     "pnpm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.2"
+  },
+  "lint-staged": {
+    "packages/astro-sandbox/**/*.{ts,astro}": [
+      "pnpm --filter=astro-sandbox eslint --fix"
+    ],
+    "packages/astro-sandbox/**/*.{ts,astro,json,md}": [
+      "pnpm --filter=astro-sandbox prettier --write"
+    ]
   }
 }
