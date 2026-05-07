@@ -122,38 +122,22 @@ pnpm lint && pnpm build
 
 **Architecture:** Astro files (.astro) are validated by `astro check` which provides comprehensive TypeScript checking. ESLint applies strict rules to standalone TypeScript files (.ts), ensuring type safety across the codebase.
 
-## 📝 Pre-commit Hook (Optional)
+## 📝 Pre-commit Hook
 
-You can add husky + lint-staged for automatic verification before commit:
+Project uses **Husky** to automatically run linter before each commit, ensuring code quality.
 
+**What happens on commit:**
 ```bash
-pnpm add -D -w husky lint-staged
-pnpm exec husky init
+pnpm lint  # Runs: Prettier check + astro check + ESLint
 ```
 
-Add to `.husky/pre-commit`:
+If linting fails, the commit will be blocked until you fix the issues. Run `pnpm lint:fix` to automatically fix most problems.
 
+**Hook location:** `.husky/pre-commit`
+
+**To bypass in emergency** (not recommended):
 ```bash
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-pnpm lint-staged
-```
-
-Add to root `package.json`:
-
-```json
-{
-  "lint-staged": {
-    "**/*.{ts,tsx,astro}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "**/*.{json,md}": [
-      "prettier --write"
-    ]
-  }
-}
+git commit --no-verify -m "emergency fix"
 ```
 
 ## 📚 Dokumentacja
