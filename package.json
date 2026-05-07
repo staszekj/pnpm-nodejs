@@ -25,13 +25,5 @@
   "devDependencies": {
     "husky": "^9.1.7",
     "lint-staged": "^17.0.2"
-  },
-  "lint-staged": {
-    "packages/astro-sandbox/**/*.{ts,astro}": [
-      "pnpm --filter=astro-sandbox eslint --fix"
-    ],
-    "packages/astro-sandbox/**/*.{ts,astro,json,md}": [
-      "pnpm --filter=astro-sandbox prettier --write"
-    ]
   }
 }
